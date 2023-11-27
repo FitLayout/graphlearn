@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from rdflib import Graph, Namespace
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, XSD
 
 BOX = Namespace("http://fitlayout.github.io/ontology/render.owl#")
 SEGM = Namespace("http://fitlayout.github.io/ontology/segmentation.owl#")
@@ -90,6 +90,7 @@ class GraphCreator:
 
 
 if __name__ == "__main__":
+    print(XSD.int)
     gc = GraphCreator()
     gc.load("art9.ttl")
     chunks = gc.extract_chunks()

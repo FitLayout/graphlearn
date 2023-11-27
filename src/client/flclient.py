@@ -1,4 +1,3 @@
-""" REST client for FitLayout """
 import requests
 
 from rdflib import Graph, Namespace, URIRef, Literal
@@ -6,6 +5,7 @@ from rdflib.namespace import RDF
 
 
 class FitLayoutClient:
+    """ REST client for FitLayout """
 
     def __init__(self, api_root, repository_id):
         self.api_root = api_root
@@ -68,7 +68,8 @@ def default_prefixes():
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
         "box": "http://fitlayout.github.io/ontology/render.owl#",
-        "segm": "http://fitlayout.github.io/ontology/segmentation.owl#"
+        "segm": "http://fitlayout.github.io/ontology/segmentation.owl#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#"
     }
 
 def default_prefix_string():

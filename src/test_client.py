@@ -1,6 +1,7 @@
 from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
+from graph.creator import GraphCreator
 
-query = default_prefix_string() + """
+query1 = default_prefix_string() + """
     SELECT (?c AS ?uri) ?backgroundColor ?color ?contentLength ?documentOrder ?fontFamily ?fontSize ?fontStyle ?fontWeight ?lineThrough ?underline ?text
         ?x ?y ?w ?h
     WHERE {
@@ -25,12 +26,27 @@ query = default_prefix_string() + """
     }
 """
 
-fl = FitLayoutClient("http://localhost:8080/fitlayout-web/api", "300ed999-eb63-4173-a3cc-2d95531f85f4")
+query2 = default_prefix_string() + """
+"""
 
-result = fl.sparql(query)
+repoId = "dd212323-311e-47d1-9823-83158d579712"
+artUri = R.art20
+
+fl = FitLayoutClient("http://localhost:8080/fitlayout-web/api", repoId)
+
+#result = fl.sparql(query2)
 #result = fl.artifacts(str(SEGM.ChunkSet))
-for row in result:
-    print(row)
+#for row in result:
+#    print(row)
 
 #art = fl.get_artifact(R.art8)
 #print(art)
+
+gc = GraphCreator(fl)
+#csdata = gc.get_chunk_data(artUri)
+#csdata = gc.get_chunk_relations(artUri)
+#for row in csdata:
+#    print(row)
+
+gr = gc.get_artifact_graph(artUri)
+print(gr)
