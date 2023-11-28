@@ -1,10 +1,13 @@
+import sys
 from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
 
 class GraphCreator:
     """ Creates a graph from a RDF repository """
 
-    def __init__(self, client):
+    def __init__(self, client, relations, tags):
         self.client = client
+        self.relations = relations
+        self.tags = tags
     
     def get_artifact_graph(self, artifact_iri):
         pgdata = self.get_chunk_set_data(artifact_iri)
@@ -12,9 +15,11 @@ class GraphCreator:
         normh = 1200 # use the estimated fold Y as 100%
         normfs = float(pgdata["fontSize"]) # use the average font size as 100%
 
+        # Extract the node data from the RDF graph
         cdata = self.get_chunk_data(artifact_iri)
         node_index = {}
         nodes = []
+        labels = []
         for chunk in cdata:
             bgcolor = decode_rgb_string(chunk["backgroundColor"])
             tcolor = decode_rgb_string(chunk["color"])
@@ -33,23 +38,33 @@ class GraphCreator:
             ]
             nodes.append(data)
             node_index[str(chunk["uri"])] = len(nodes) - 1
+            tag = self.tag_id(chunk["tag"])
+            labels.append(tag)
 
+        # Extract the edge data from the RDF graph
         edata = self.get_chunk_relations(artifact_iri)
-        edges = []
+        edge_index = [[], []]
+        edge_props = []
         for edge in edata:
-            if str(edge["c1"]) in node_index and str(edge["c2"]) in node_index:
+            rel = self.relation_id(edge["type"])
+            if str(edge["c1"]) in node_index and str(edge["c2"]) in node_index and rel != -1:
                 c1id = node_index[str(edge["c1"])]
                 c2id = node_index[str(edge["c2"])]
-                # TODO weights
-                data = [c1id, c2id, float(edge["weight"])]
-                edges.append(data)
+                edge_index[0].append(c1id)
+                edge_index[1].append(c2id)
+                edge_props.append([
+                    float(edge["weight"]),
+                    rel
+                ])
+            else:
+                print("Invalid edge " + str(edge["type"]), file=sys.stderr)
 
-        return (nodes, edges)
+        return (nodes, edge_index, edge_props)
     
     def get_chunk_data(self, chunk_set_iri):
         query = default_prefix_string() + """
             SELECT (?c AS ?uri) ?backgroundColor ?color ?contentLength ?documentOrder ?fontFamily ?fontSize ?fontStyle ?fontWeight ?lineThrough ?underline ?text
-                ?x ?y ?w ?h
+                ?x ?y ?w ?h ?tag
             WHERE {
                 ?c rdf:type segm:TextChunk .
                 ?c segm:belongsToChunkSet <""" + str(chunk_set_iri) + """> .
@@ -69,7 +84,9 @@ class GraphCreator:
                 ?b box:positionX ?x .
                 ?b box:positionY ?y .
                 ?b box:width ?w .
-                ?b box:height ?h
+                ?b box:height ?h .
+
+                OPTIONAL { ?c segm:hasTag ?tag }
             }
         """
         return self.client.sparql(query)
@@ -104,6 +121,18 @@ class GraphCreator:
             }
         """
         return next(self.client.sparql(query), None)
+    
+    def relation_id(self, relation_iri):
+        try:
+            return self.relations.index(relation_iri)
+        except ValueError:
+            return -1
+    
+    def tag_id(self, tag_iri):
+        try:
+            return self.tags.index(tag_iri)
+        except ValueError:
+            return -1
 
 
 def decode_rgb_string(rgb_string):

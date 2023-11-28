@@ -29,8 +29,10 @@ query1 = default_prefix_string() + """
 query2 = default_prefix_string() + """
 """
 
-repoId = "dd212323-311e-47d1-9823-83158d579712"
-artUri = R.art20
+#repoId = "dd212323-311e-47d1-9823-83158d579712"
+#artUri = R.art20
+repoId = "300ed999-eb63-4173-a3cc-2d95531f85f4"
+artUri = R.art8
 
 fl = FitLayoutClient("http://localhost:8080/fitlayout-web/api", repoId)
 
@@ -42,11 +44,23 @@ fl = FitLayoutClient("http://localhost:8080/fitlayout-web/api", repoId)
 #art = fl.get_artifact(R.art8)
 #print(art)
 
-gc = GraphCreator(fl)
+relations = [
+    R["rel-above"],
+    R["rel-below"],
+    R["rel-onLeft"],   ## TODO left-of, right-of
+    R["rel-onRight"]
+]
+
+tags = [
+    R["tag-gemeric--person"],
+    R["tag-gemeric--title"]
+]
+
+gc = GraphCreator(fl, relations, tags)
 #csdata = gc.get_chunk_data(artUri)
 #csdata = gc.get_chunk_relations(artUri)
 #for row in csdata:
 #    print(row)
 
 gr = gc.get_artifact_graph(artUri)
-print(gr)
+print(gr[2])
