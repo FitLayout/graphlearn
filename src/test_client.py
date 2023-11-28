@@ -1,3 +1,5 @@
+import torch
+from torch_geometric.data import Data
 from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
 from graph.creator import GraphCreator
 
@@ -52,8 +54,8 @@ relations = [
 ]
 
 tags = [
-    R["tag-gemeric--person"],
-    R["tag-gemeric--title"]
+    R["tag-generic--person"],
+    R["tag-generic--title"]
 ]
 
 gc = GraphCreator(fl, relations, tags)
@@ -62,5 +64,9 @@ gc = GraphCreator(fl, relations, tags)
 #for row in csdata:
 #    print(row)
 
-gr = gc.get_artifact_graph(artUri)
-print(gr[2])
+data = gc.get_artifact_graph(artUri)
+#data.validate(raise_on_error=True)
+print(data.is_directed())
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+data = data.to(device)

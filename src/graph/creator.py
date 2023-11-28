@@ -1,5 +1,7 @@
 import sys
+import torch
 from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
+from torch_geometric.data import Data
 
 class GraphCreator:
     """ Creates a graph from a RDF repository """
@@ -38,7 +40,7 @@ class GraphCreator:
             ]
             nodes.append(data)
             node_index[str(chunk["uri"])] = len(nodes) - 1
-            tag = self.tag_id(chunk["tag"])
+            tag = self.tag_id(chunk.get("tag", ""))
             labels.append(tag)
 
         # Extract the edge data from the RDF graph
@@ -59,7 +61,11 @@ class GraphCreator:
             else:
                 print("Invalid edge " + str(edge["type"]), file=sys.stderr)
 
-        return (nodes, edge_index, edge_props)
+        # Create the graph
+        edge_index = torch.tensor(edge_index, dtype=torch.long)
+        edge_props = torch.tensor(edge_props, dtype=torch.float)
+        data = Data(x=torch.tensor(nodes, dtype=torch.float), edge_index=edge_index, edge_attr=edge_props, y=torch.tensor(labels, dtype=torch.long))
+        return data
     
     def get_chunk_data(self, chunk_set_iri):
         query = default_prefix_string() + """
