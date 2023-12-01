@@ -1,7 +1,7 @@
 import torch
 from torch_geometric.data import Data
 from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
-from graph.creator import ChunkGraphCreator
+from graph.creator import AreaGraphCreator
 
 query1 = default_prefix_string() + """
     SELECT (?c AS ?uri) ?backgroundColor ?color ?contentLength ?documentOrder ?fontFamily ?fontSize ?fontStyle ?fontWeight ?lineThrough ?underline ?text
@@ -33,8 +33,8 @@ query2 = default_prefix_string() + """
 
 #repoId = "dd212323-311e-47d1-9823-83158d579712"
 #artUri = R.art20
-repoId = "300ed999-eb63-4173-a3cc-2d95531f85f4"
-artUri = R.art8
+repoId = "2e961c23-04a5-4735-b9e9-1e1751b8037e"
+artUri = R.art5
 
 fl = FitLayoutClient("http://localhost:8080/fitlayout-web/api", repoId)
 
@@ -47,6 +47,8 @@ fl = FitLayoutClient("http://localhost:8080/fitlayout-web/api", repoId)
 #print(art)
 
 relations = [
+    SEGM["isChildOf"],
+    SEGM["isChildOf"], ## for parent
     R["rel-above"],
     R["rel-below"],
     R["rel-onLeft"],   ## TODO left-of, right-of
@@ -54,11 +56,14 @@ relations = [
 ]
 
 tags = [
-    R["tag-generic--person"],
-    R["tag-generic--title"]
+    R["tag-klarna--cart"],
+    R["tag-klarna--main_picture"],
+    R["tag-klarna--name"],
+    R["tag-klarna--price"],
+    R["tag-klarna--add_to_cart"]
 ]
 
-gc = ChunkGraphCreator(fl, relations, tags)
+gc = AreaGraphCreator(fl, relations, tags)
 #csdata = gc.get_chunk_data(artUri)
 #csdata = gc.get_chunk_relations(artUri)
 #for row in csdata:
