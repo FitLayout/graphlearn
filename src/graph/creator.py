@@ -4,7 +4,28 @@ from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
 from torch_geometric.data import Data
 
 class GraphCreator:
-    """ Creates a graph from a RDF repository """
+    """ A base class for creating a graph from a RDF repository """
+
+    def __init__(self, client, relations, tags):
+        self.client = client
+        self.relations = relations
+        self.tags = tags
+
+    def relation_id(self, relation_iri):
+        try:
+            return self.relations.index(relation_iri)
+        except ValueError:
+            return -1
+    
+    def tag_id(self, tag_iri):
+        try:
+            return self.tags.index(tag_iri)
+        except ValueError:
+            return -1
+
+
+class ChunkGraphCreator (GraphCreator):
+    """ Creates a graph of text chunks from a RDF repository """
 
     def __init__(self, client, relations, tags):
         self.client = client
@@ -127,18 +148,6 @@ class GraphCreator:
             }
         """
         return next(self.client.sparql(query), None)
-    
-    def relation_id(self, relation_iri):
-        try:
-            return self.relations.index(relation_iri)
-        except ValueError:
-            return -1
-    
-    def tag_id(self, tag_iri):
-        try:
-            return self.tags.index(tag_iri)
-        except ValueError:
-            return -1
 
 
 def decode_rgb_string(rgb_string):

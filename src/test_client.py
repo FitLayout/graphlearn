@@ -1,7 +1,7 @@
 import torch
 from torch_geometric.data import Data
 from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
-from graph.creator import GraphCreator
+from graph.creator import ChunkGraphCreator
 
 query1 = default_prefix_string() + """
     SELECT (?c AS ?uri) ?backgroundColor ?color ?contentLength ?documentOrder ?fontFamily ?fontSize ?fontStyle ?fontWeight ?lineThrough ?underline ?text
@@ -58,7 +58,7 @@ tags = [
     R["tag-generic--title"]
 ]
 
-gc = GraphCreator(fl, relations, tags)
+gc = ChunkGraphCreator(fl, relations, tags)
 #csdata = gc.get_chunk_data(artUri)
 #csdata = gc.get_chunk_relations(artUri)
 #for row in csdata:
