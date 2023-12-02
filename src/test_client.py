@@ -64,6 +64,7 @@ tags = [
 ]
 
 gc = AreaGraphCreator(fl, relations, tags)
+print(list(gc.get_artifact_iris()))
 #csdata = gc.get_chunk_data(artUri)
 #csdata = gc.get_chunk_relations(artUri)
 #for row in csdata:

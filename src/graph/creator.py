@@ -49,6 +49,19 @@ class AreaGraphCreator (GraphCreator):
     def __init__(self, client, relations, tags):
         super(AreaGraphCreator, self).__init__(client, relations, tags)
     
+    def get_artifact_iris(self):
+        """ Finds the IRIs of all the tagged area artifacts (identified by the 'FitLayout.Tag.Attribute' label) """
+        query = default_prefix_string() + """
+            SELECT DISTINCT ?art
+            WHERE {
+                ?art rdfs:label "FitLayout.Tag.Attribute" 
+            }
+        """
+        ret = []
+        for row in self.client.sparql(query):
+            ret.append(row["art"])
+        return ret
+
     def get_artifact_graph(self, artifact_iri):
         pgdata = self.get_page_data(artifact_iri)
         normw = int(pgdata["width"]) # use the full page width as 100%
@@ -178,6 +191,19 @@ class ChunkGraphCreator (GraphCreator):
     def __init__(self, client, relations, tags):
         super(ChunkGraphCreator, self).__init__(client, relations, tags)
     
+    def get_artifact_iris(self):
+        """ Finds the IRIs of all the TextChunk artifacts """
+        query = default_prefix_string() + """
+            SELECT DISTINCT ?art
+            WHERE {
+                ?art rdf:type segm:TextChunk
+            }
+        """
+        ret = []
+        for row in self.client.sparql(query):
+            ret.append(row["art"])
+        return ret
+
     def get_artifact_graph(self, artifact_iri):
         pgdata = self.get_page_data(artifact_iri)
         normw = int(pgdata["width"]) # use the full page width as 100%
