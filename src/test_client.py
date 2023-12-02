@@ -2,6 +2,7 @@ import torch
 from torch_geometric.data import Data
 from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
 from graph.creator import AreaGraphCreator
+from graph.dataset import RemoteDataSet
 
 query1 = default_prefix_string() + """
     SELECT (?c AS ?uri) ?backgroundColor ?color ?contentLength ?documentOrder ?fontFamily ?fontSize ?fontStyle ?fontWeight ?lineThrough ?underline ?text
@@ -70,9 +71,16 @@ print(list(gc.get_artifact_iris()))
 #for row in csdata:
 #    print(row)
 
-data = gc.get_artifact_graph(artUri)
+#data = gc.get_artifact_graph(artUri)
 #data.validate(raise_on_error=True)
-print(data.is_directed())
+#print(data.is_directed())
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-data = data.to(device)
+#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#data = data.to(device)
+
+dataset = RemoteDataSet(gc, limit=30)
+print(dataset.num_classes)
+print(dataset.num_node_features)
+print(dataset.num_edge_features)
+data = dataset[0]
+print(data)
