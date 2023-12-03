@@ -40,7 +40,7 @@ class GraphCreator:
         try:
             return self.tags.index(tag_iri)
         except ValueError:
-            return -1
+            return 0
 
 
 class AreaGraphCreator (GraphCreator):
@@ -73,16 +73,18 @@ class AreaGraphCreator (GraphCreator):
         node_index = {}
         nodes = []
         labels = []
+        mask = []
         for chunk in cdata:
             bgcolor = decode_rgb_string(chunk.get("backgroundColor", None))
             tcolor = decode_rgb_string(chunk.get("color", None))
+            contentLength = int(chunk.get("contentLength", 0))
             data = [
                 bgcolor[0], bgcolor[1], bgcolor[2],
                 tcolor[0], tcolor[1], tcolor[2],
                 float(chunk["x"]) / normw, float(chunk["y"]) / normh,
                 float(chunk["x"] + chunk["w"]) / normw, float(chunk["y"] + chunk["h"]) / normh,
                 float(chunk["w"]) / normw, float(chunk["h"]) / normh,
-                int(chunk.get("contentLength", 0)),
+                contentLength,
                 float(chunk["fontSize"]),
                 float(chunk["fontStyle"]) / normfs,
                 float(chunk["fontWeight"]),
@@ -93,6 +95,7 @@ class AreaGraphCreator (GraphCreator):
             node_index[str(chunk["uri"])] = len(nodes) - 1
             tag = self.tag_id(chunk.get("tag", ""))
             labels.append(tag)
+            mask.append(True if contentLength > 0 else False)
 
         # Extract the edge data from the RDF graph
         edge_index = [[], []]
@@ -128,7 +131,11 @@ class AreaGraphCreator (GraphCreator):
         # Create the graph
         edge_index = torch.tensor(edge_index, dtype=torch.long)
         edge_props = torch.tensor(edge_props, dtype=torch.float)
-        data = Data(x=torch.tensor(nodes, dtype=torch.float), edge_index=edge_index, edge_attr=edge_props, y=torch.tensor(labels, dtype=torch.long))
+        data = Data(x=torch.tensor(nodes, dtype=torch.float), 
+                    edge_index=edge_index, 
+                    edge_attr=edge_props, 
+                    y=torch.tensor(labels, dtype=torch.long),
+                    train_mask=torch.tensor(mask, dtype=torch.bool))
         return data
 
     def get_area_data(self, area_tree_iri):
