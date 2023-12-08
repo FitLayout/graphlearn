@@ -1,3 +1,4 @@
+import string
 import sys
 import torch
 from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
@@ -78,6 +79,8 @@ class AreaGraphCreator (GraphCreator):
             bgcolor = decode_rgb_string(chunk.get("backgroundColor", None))
             tcolor = decode_rgb_string(chunk.get("color", None))
             contentLength = int(chunk.get("contentLength", 0))
+            text = chunk.get("text", "")
+            letter_percentage, number_percentage, punctuation_percentage = count_letters_numbers_punctuation(text)
             data = [
                 bgcolor[0], bgcolor[1], bgcolor[2],
                 tcolor[0], tcolor[1], tcolor[2],
@@ -85,6 +88,9 @@ class AreaGraphCreator (GraphCreator):
                 float(chunk["x"] + chunk["w"]) / normw, float(chunk["y"] + chunk["h"]) / normh,
                 float(chunk["w"]) / normw, float(chunk["h"]) / normh,
                 contentLength,
+                letter_percentage,
+                number_percentage,
+                punctuation_percentage,
                 float(chunk["fontSize"]),
                 float(chunk["fontStyle"]) / normfs,
                 float(chunk["fontWeight"]),
@@ -318,3 +324,22 @@ def decode_rgb_string(rgb_string):
         return (-1, -1, -1) # used for transparent/unknown color
     else:
         return (int(rgb_string[1:3], 16), int(rgb_string[3:5], 16), int(rgb_string[5:7], 16))
+
+def count_letters_numbers_punctuation(text):
+    if len(text) == 0:
+        return (0, 0, 0)
+    else:
+        letters = 0
+        numbers = 0
+        punctuation = 0
+        for char in text:
+            if char.isalpha():
+                letters += 1
+            elif char.isdigit():
+                numbers += 1
+            elif char in string.punctuation:
+                punctuation += 1
+        letter_percentage = letters / len(text)
+        number_percentage = numbers / len(text)
+        punctuation_percentage = punctuation / len(text)
+        return (letter_percentage, number_percentage, punctuation_percentage)
