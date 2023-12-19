@@ -66,8 +66,12 @@ class AreaGraphCreator (GraphCreator):
     def get_artifact_graph(self, artifact_iri):
         pgdata = self.get_page_data(artifact_iri)
         normw = int(pgdata["width"]) # use the full page width as 100%
+        if normw == 0:
+            normw = 1200
         normh = 1200 # use the estimated fold Y as 100%
         normfs = float(pgdata["fontSize"]) # use the average font size as 100%
+        if normfs == 0:
+            normfs = 12.0
 
         # Extract the node data from the RDF graph
         cdata = self.get_area_data(artifact_iri)
@@ -91,8 +95,8 @@ class AreaGraphCreator (GraphCreator):
                 letter_percentage,
                 number_percentage,
                 punctuation_percentage,
-                float(chunk["fontSize"]),
-                float(chunk["fontStyle"]) / normfs,
+                float(chunk["fontSize"]) / normfs,
+                float(chunk["fontStyle"]),
                 float(chunk["fontWeight"]),
                 float(chunk["lineThrough"]),
                 float(chunk["underline"]),
@@ -220,8 +224,12 @@ class ChunkGraphCreator (GraphCreator):
     def get_artifact_graph(self, artifact_iri):
         pgdata = self.get_page_data(artifact_iri)
         normw = int(pgdata["width"]) # use the full page width as 100%
+        if normw == 0:
+            normw = 1200
         normh = 1200 # use the estimated fold Y as 100%
         normfs = float(pgdata["fontSize"]) # use the average font size as 100%
+        if normfs == 0:
+            normfs = 12.0
 
         # Extract the node data from the RDF graph
         cdata = self.get_chunk_data(artifact_iri)
@@ -238,8 +246,8 @@ class ChunkGraphCreator (GraphCreator):
                 float(chunk["x"] + chunk["w"]) / normw, float(chunk["y"] + chunk["h"]) / normh,
                 float(chunk["w"]) / normw, float(chunk["h"]) / normh,
                 int(chunk["contentLength"]),
-                float(chunk["fontSize"]),
-                float(chunk["fontStyle"]) / normfs,
+                float(chunk["fontSize"]) / normfs,
+                float(chunk["fontStyle"]),
                 float(chunk["fontWeight"]),
                 float(chunk["lineThrough"]),
                 float(chunk["underline"]),
