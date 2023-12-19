@@ -16,7 +16,7 @@ class FitLayoutClient:
     
     def sparql(self, query):
         """ Executes a SPARQL query on the repository """
-        url = f"{self.repo_endpoint()}/repository/query"
+        url = f"{self.repo_endpoint()}/repository/query?limit=500000"
         headers = { "Content-Type": "application/sparql-query" }
         response = requests.post(url, data=query, headers=headers)
         response.raise_for_status()
