@@ -4,51 +4,18 @@ from client.flclient import FitLayoutClient, default_prefix_string, R, SEGM
 from graph.creator import AreaGraphCreator
 from graph.dataset import RemoteDataSet
 
-query1 = default_prefix_string() + """
-    SELECT (?c AS ?uri) ?backgroundColor ?color ?contentLength ?documentOrder ?fontFamily ?fontSize ?fontStyle ?fontWeight ?lineThrough ?underline ?text
-        ?x ?y ?w ?h
-    WHERE {
-        ?c rdf:type segm:TextChunk .
-        ?c box:backgroundColor ?backgroundColor .
-        ?c box:color ?color .
-        ?c box:contentLength ?contentLength .
-        ?c box:documentOrder ?documentOrder .
-        ?c box:fontFamily ?fontFamily .
-        ?c box:fontSize ?fontSize .
-        ?c box:fontStyle ?fontStyle .
-        ?c box:fontWeight ?fontWeight .
-        ?c box:lineThrough ?lineThrough .
-        ?c box:underline ?underline .
-        ?c segm:text ?text .
-        ?c box:bounds ?b . 
+# Disable IPv6 support if necessary (e.g. for the server running in docker containers)
+#import requests
+#requests.packages.urllib3.util.connection.HAS_IPV6 = False
 
-        ?b box:positionX ?x .
-        ?b box:positionY ?y .
-        ?b box:width ?w .
-        ?b box:height ?h
-    }
-"""
+# FitLayout client for a local development server
+repoId = "03304483-bce5-45fd-88e7-cffa6875031f" # adjust the repoId depending on your server config
+fl = FitLayoutClient("http://localhost:8080/fitlayout-web/api", repoId)
 
-query2 = default_prefix_string() + """
-"""
+# Example of a local single-repository server (the repoId is "default")
+#fl = FitLayoutClient("http://my.server.com:8400/api", "default")
 
-#repoId = "dd212323-311e-47d1-9823-83158d579712"
-#artUri = R.art20
-repoId = "2e961c23-04a5-4735-b9e9-1e1751b8037e"
-artUri = R.art5
-
-#fl = FitLayoutClient("http://localhost:8080/fitlayout-web/api", repoId)
-
-fl = FitLayoutClient("http://manicka.fit.vutbr.cz:8400/api", "default")
-
-#result = fl.sparql(query2)
-#result = fl.artifacts(str(SEGM.ChunkSet))
-#for row in result:
-#    print(row)
-
-#art = fl.get_artifact(R.art8)
-#print(art)
-
+# The relations among visual areas that are included in the graphs
 relations = [
     SEGM["isChildOf"],
     SEGM["isChildOf"], ## for parent
@@ -58,6 +25,7 @@ relations = [
     R["rel-onRight"]
 ]
 
+# The visual area tags that are used as classes
 tags = [
     R["tag-klarna--none"],
     R["tag-klarna--cart"],
@@ -67,20 +35,10 @@ tags = [
     R["tag-klarna--add_to_cart"]
 ]
 
+# Create the graph creator
 gc = AreaGraphCreator(fl, relations, tags)
-#print(list(gc.get_artifact_iris()))
-#csdata = gc.get_chunk_data(artUri)
-#csdata = gc.get_chunk_relations(artUri)
-#for row in csdata:
-#    print(row)
 
-#data = gc.get_artifact_graph(artUri)
-#data.validate(raise_on_error=True)
-#print(data.is_directed())
-
-#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-#data = data.to(device)
-
+# Examine the dataset
 dataset = RemoteDataSet(gc, limit=5)
 print(dataset.num_classes)
 print(dataset.num_features)
@@ -89,6 +47,8 @@ print(dataset.num_edge_features)
 #data = dataset[0]
 #print(data.y)
 
+# Simple example of training a GCN model
+# Taken from https://pytorch-geometric.readthedocs.io/en/latest/get_started/introduction.html
 import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
