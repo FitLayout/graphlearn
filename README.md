@@ -29,7 +29,7 @@ All the script server and CLI srcipts below require Docker to be installed on th
 First, the `FL_STORAGE` environment variable is set to the path where the RDF artifacts will be stored, e.g.:
 
 ```bash
-export FL_PATH="$HOME/.fitlayout/storage-demo"
+export FL_STORAGE="$HOME/.fitlayout/storage-demo"
 ```
 
 The folder will be created automatically if it does not already exist.
@@ -61,7 +61,7 @@ The server is used as the data source for the python scripts. Again, the `FL_STO
 to the path where the RDF artifacts are stored, e.g.:
 
 ```bash
-export FL_PATH="$HOME/.fitlayout/storage-demo"
+export FL_STORAGE="$HOME/.fitlayout/storage-demo"
 ```
 
 For acessing the repository on a local machine, the local GUI browser may be used as mentioned above.
