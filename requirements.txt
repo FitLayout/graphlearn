@@ -1,3 +1,4 @@
+requests
 torch_geometric
 torch
 balanced_loss
