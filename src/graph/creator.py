@@ -113,17 +113,18 @@ class AreaGraphCreator (GraphCreator):
         edata = self.get_area_relations(artifact_iri)
         for edge in edata:
             rel = self.relation_id(edge["type"])
-            if str(edge["c1"]) in node_index and str(edge["c2"]) in node_index and rel != -1:
-                c1id = node_index[str(edge["c1"])]
-                c2id = node_index[str(edge["c2"])]
-                edge_index[0].append(c1id)
-                edge_index[1].append(c2id)
-                edge_props.append([
-                    float(edge["weight"]),
-                    rel
-                ])
-            else:
-                print("Invalid edge " + str(edge["type"]), file=sys.stderr)
+            if (rel != -1): # consider the given relations only
+                if str(edge["c1"]) in node_index and str(edge["c2"]) in node_index:
+                    c1id = node_index[str(edge["c1"])]
+                    c2id = node_index[str(edge["c2"])]
+                    edge_index[0].append(c1id)
+                    edge_index[1].append(c2id)
+                    edge_props.append([
+                        float(edge["weight"]),
+                        rel
+                    ])
+                else:
+                    print("Invalid edge (start or end node missing) " + str(edge["type"]), file=sys.stderr)
 
         # Extract area nesting
         ndata = self.get_area_nesting(artifact_iri)
@@ -263,17 +264,18 @@ class ChunkGraphCreator (GraphCreator):
         edge_props = []
         for edge in edata:
             rel = self.relation_id(edge["type"])
-            if str(edge["c1"]) in node_index and str(edge["c2"]) in node_index and rel != -1:
-                c1id = node_index[str(edge["c1"])]
-                c2id = node_index[str(edge["c2"])]
-                edge_index[0].append(c1id)
-                edge_index[1].append(c2id)
-                edge_props.append([
-                    float(edge["weight"]),
-                    rel
-                ])
-            else:
-                print("Invalid edge " + str(edge["type"]), file=sys.stderr)
+            if rel != -1:
+                if str(edge["c1"]) in node_index and str(edge["c2"]) in node_index:
+                    c1id = node_index[str(edge["c1"])]
+                    c2id = node_index[str(edge["c2"])]
+                    edge_index[0].append(c1id)
+                    edge_index[1].append(c2id)
+                    edge_props.append([
+                        float(edge["weight"]),
+                        rel
+                    ])
+                else:
+                    print("Invalid edge (start or end node missing) " + str(edge["type"]), file=sys.stderr)
 
         # Create the graph
         edge_index = torch.tensor(edge_index, dtype=torch.long)
