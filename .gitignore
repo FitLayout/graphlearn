@@ -1,5 +1,6 @@
 *~
 *.ttl
+*.code-workspace
 
 # Logs and temporary files
 .venv
