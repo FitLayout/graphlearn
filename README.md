@@ -40,8 +40,8 @@ command may be used:
 
 ```bash
 ./fitlayout.sh \
-    RENDER -b puppeteer https://cssbox.sourceforge.net \
     USE local \
+    RENDER -b puppeteer https://cssbox.sourceforge.net \
     STORE \
     SEGMENT -m simple \
     STORE
