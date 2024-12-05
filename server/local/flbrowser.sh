@@ -33,6 +33,8 @@ fi
 echo "Browsing artifact storage in $STORAGE_PATH";
 echo "Starting the local server. After the server is started please point your server to"
 echo "http://localhost:$PORT"
+echo "Please wait for the 'ready' message"
+echo "(press ctrl-C to stop the server)"
 
 # Run the image
 docker run --rm \

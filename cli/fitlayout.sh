@@ -22,6 +22,8 @@ if [ ! -d "$OUTPUT_FOLDER" ]; then
         mkdir -p "$OUTPUT_FOLDER"
 fi
 
+echo "Local storage is mapped to $STORAGE_PATH"
+
 # Mount the extensions folder if present
 EXT=""
 if [ -d "$EXT_FOLDER" ]; then
