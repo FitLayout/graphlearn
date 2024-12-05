@@ -55,6 +55,8 @@ for instructions on how to run the local server with a web GUI and open the GUI 
 tab of the GUI to render the pages and subsequently *Segmentation* tab to create the AreaTree using the 
 *Simple area tree construction* service.
 
+*Note:* To avoid conflicts, the local server instance and the CLI tool should not be used simultaneously on the same storage folder.
+
 ### Running the server
 
 The server is used as the data source for the python scripts. Again, the `FL_STORAGE` environment variable should be set 
