@@ -1,0 +1,19 @@
+*~
+*.ttl
+*.code-workspace
+config_local.py
+
+# Logs and temporary files
+.venv
+.pytest_cache
+__pycache__
+*.log
+
+# Compiled files
+*.pyc
+*.pyo
+
+# Distribution
+dist
+build
+*.egg-info
